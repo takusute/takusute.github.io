@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>転送中です</title>
+<style>body{font:16px -apple-system,sans-serif;margin:40px 24px;color:#333}</style>
+</head>
+<body>
+<p id="msg">転送中です</p>
+<script>
+(async function () {
+  var ALLOWED = ["fb6813acb3bb84efaf3dcb4f46141fc385be65903d9196b4e8f80750a601a821"];
+  var msg = document.getElementById("msg");
+  try {
+    var to = new URL(new URLSearchParams(location.hash.slice(1)).get("to") || "");
+    var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(to.hostname));
+    var hex = Array.from(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    if (to.protocol !== "https:" || ALLOWED.indexOf(hex) < 0) throw new Error();
+    setTimeout(function () { location.replace(to.href); }, 1500);
+  } catch (e) {
+    msg.textContent = "転送できませんでした";
+  }
+})();
+</script>
+</body>
+</html>
